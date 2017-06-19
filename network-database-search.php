@@ -7,8 +7,21 @@
 	Author URI: http://micahjon.com
 */				
 
-require 'api/get-sites.php';
-// require 'api/search-blog.php';
+/**
+ * Register APIs for logged-in users
+ */
+add_action('init', function()
+{
+	if ( is_user_logged_in() ) {
+		
+		// Get list of sites
+		require 'api/get-sites.php';
+		
+		// Search sites
+		require 'api/queries.php';
+		require 'api/search-site.php';
+	}
+});
 
 /**
  * Add "Database Search" menu item under Settings on both Site Dashboard and Network Dashboard menus

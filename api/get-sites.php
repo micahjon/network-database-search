@@ -33,7 +33,7 @@ function nds_restapi_get_sites( WP_REST_Request $request )
 
 			return [
 				'id' => (int) $id,
-				'name' => get_blog_details($id)->blogname
+				'name' => get_blog_details($id)->blogname,
 			];
 
 		}, get_sites());
