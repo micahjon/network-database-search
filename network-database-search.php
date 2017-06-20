@@ -8,20 +8,13 @@
 */				
 
 /**
- * Register APIs for logged-in users
+ * Register REST APIs
  */
-add_action('init', function()
-{
-	if ( is_user_logged_in() ) {
-		
-		// Get list of sites
-		require 'api/get-sites.php';
-		
-		// Search sites
-		require 'api/queries.php';
-		require 'api/search-site.php';
-	}
-});
+// Get list of sites
+require 'api/get-sites.php';
+
+// Search sites
+require 'api/search-site.php';
 
 /**
  * Add "Database Search" menu item under Settings on both Site Dashboard and Network Dashboard menus
@@ -54,5 +47,6 @@ add_action('admin_menu', function()
  */
 function nds_page_content()
 {
-	echo 'test';
+	echo 'yolo';
+
 }

@@ -1,5 +1,10 @@
 <?php
 /**
+ * Helper functions used for database search queries
+ */
+require 'queries.php';
+
+/**
  * Searches site database table(s) for specified string
  * params:
  * 		- term (string to search for)
@@ -71,20 +76,16 @@ function nds_restapi_search_site( WP_REST_Request $request )
 
 	// Get search term
 	$term = $request['term'];
-	
-	// Get query names and convert them to function names
-	$queryFunctions = array_map(function($query)
-	{
-		return 'nds_query_'. trim($query);
-	}, 
-	explode(',', $request['queries']));
 
+	// Get names of search queries
+	$queryNames = array_map('trim', explode(',', $request['queries']));
+	
 	// Get search results
-	$results = array_map(function($queryFunction) use ($term)
+	$results = array_map(function($queryName) use ($term)
 	{
-		return call_user_func($queryFunction, $term);
+		return [ $queryName => call_user_func("nds_query_{$queryName}", $term) ];
 	}, 
-	$queryFunctions);
+	$queryNames);
 	
 	return new WP_REST_Response($results , 200);
 }
