@@ -7,7 +7,7 @@ import './style'; // index.less
 let root;
 function init() {
 	let App = require('./components/app').default;
-	root = render(<App />, document.body, root);
+	root = render(<App />, document.getElementById('wpbody-content'), root);
 }
 
 // in development, set up HMR:

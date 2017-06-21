@@ -10,6 +10,7 @@ import { h, Component } from 'preact';
 
 export default class App extends Component {
 	state = {
+
 		// // Are the spreadsheets working?
 		// sheetsReady: false,
 		// // List of all event objects
@@ -60,18 +61,14 @@ export default class App extends Component {
 	// 	);
 	// }
 
-	// /** Gets fired when the route changes.
-	//  *	@param {Object} event		"change" event from [preact-router](http://git.io/preact-router)
-	//  *	@param {string} event.url	The newly routed URL
-	//  */
-	// handleRoute = e => {
-	// 	this.currentUrl = e.url;
-	// };
-
 	render(props, state) {
 		return (
-			<div id="app">
-				Hello world!
+			<div id="app" class="wrap nds">
+				<h1>Network Database Search</h1>
+				<form class="nds__search-form">
+					<input type="search" name="term" class="nds__search-input" />
+					<input class="button-primary nds__button" type="submit" value="Search" autocomplete="off" />
+				</form>
 			</div>
 		);
 	}
