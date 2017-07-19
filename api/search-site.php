@@ -8,7 +8,7 @@ require 'queries.php';
  * Searches site database table(s) for specified string
  * params:
  * 		- term (string to search for)
- * 		- schema (JSON object with table names and column names)
+ * 		- queries (database queries to run - each corresponds to a function)
  * 	
  * output: 
  * 		JSON Array of Objects:
@@ -71,9 +71,6 @@ add_action('rest_api_init', 'nds_restapi_route_search_site');
 
 function nds_restapi_search_site( WP_REST_Request $request )
 {
-	// Used to generate table names on this site
-	global $blog_id, $wpdb;
-
 	// Get search term
 	$term = $request['term'];
 

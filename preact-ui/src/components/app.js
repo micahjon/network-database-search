@@ -10,13 +10,7 @@ import { h, Component } from 'preact';
 
 export default class App extends Component {
 	state = {
-
-		// // Are the spreadsheets working?
-		// sheetsReady: false,
-		// // List of all event objects
-		// events: [],
-		// // List of all registrations
-		// registrations: [],
+		sites: 'Loading sites...',
 	};
 
 	// /**
@@ -30,7 +24,36 @@ export default class App extends Component {
 	// 	}
 	// };
 
-	// componentDidMount() {
+	componentDidMount() {
+		
+		// Get list of sites user has access to
+		jQuery
+		.post('http://gc.edu' + ajaxurl, { action: 'nds_get_sites_api_url' })
+		.fail(() => {
+			this.setState({ sites: 'Sorry, unable to get url to API.' })
+		})
+		.done((url) => {
+			// Got url, not fetch sites
+			jQuery
+			.getJSON(url)
+			.fail(() => {
+				this.setState({ sites: 'Sorry, unable to get list of sites.' })
+			})
+			.done((sites) => {
+				if ( !jQuery.isArray(sites) ) {
+					this.setState({ sites: 'Sorry, unable to get list of sites.' })
+				}
+				else if ( !sites.length ) {
+					this.setState({ sites: 'Sorry, your user doesn\'t have access to any sites.' })
+				}
+				else {
+					this.setState({ sites })
+				}
+			})
+		});
+
+
+
 	// 	// Go to /sheets/ route if the model isn't ready
 	// 	if (!this.state.events.length || !this.state.registrations.length) {
 	// 		if (Router.getCurrentUrl() !== publicPath + 'sheets/') {
@@ -51,7 +74,7 @@ export default class App extends Component {
 	// 		this.handleVisibilityChange,
 	// 		false
 	// 	);
-	// }
+	}
 
 	// componentWillUnmount() {
 	// 	// Stop listening to tab focus
@@ -66,6 +89,18 @@ export default class App extends Component {
 			<div id="app" class="wrap nds">
 				<h1>Network Database Search</h1>
 				<form class="nds__search-form">
+					{
+						// Sites have loaded
+						jQuery.isArray(state.sites) && state.sites.map((site) => 
+						{ 
+							return <label><input type="checkbox" /> {site.name}</label>
+						})
+						|| 
+						// Sites are loading or something went wrong
+						<p>{state.sites}</p>
+
+					}
+					<br />
 					<input type="search" name="term" class="nds__search-input" />
 					<input class="button-primary nds__button" type="submit" value="Search" autocomplete="off" />
 				</form>

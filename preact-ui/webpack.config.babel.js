@@ -2,9 +2,8 @@ import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import autoprefixer from 'autoprefixer';
-// import CopyWebpackPlugin from 'copy-webpack-plugin';
+import BrowserSyncPlugin from 'browser-sync-webpack-plugin';
 import ReplacePlugin from 'replace-bundle-webpack-plugin';
-// import OfflinePlugin from 'offline-plugin';
 import path from 'path';
 const ENV = process.env.NODE_ENV || 'development';
 
@@ -126,9 +125,18 @@ module.exports = {
 		new webpack.DefinePlugin({
 			'process.env.NODE_ENV': JSON.stringify(ENV)
 		}),
-		new HtmlWebpackPlugin({
-			template: './index.ejs',
-			minify: { collapseWhitespace: true }
+		// new HtmlWebpackPlugin({
+		// 	template: './index.ejs',
+		// 	minify: { collapseWhitespace: true }
+		// }),
+		new BrowserSyncPlugin({
+			proxy: {
+				target: 'http://gc.edu/wp-admin/network/settings.php?page=network-database-search',
+			},
+			files: [
+				'../**/*.php'
+			],
+			reloadDelay: 0
 		}),
 		// new CopyWebpackPlugin([
 		// 	{ from: './manifest.json', to: './' },
@@ -171,22 +179,6 @@ module.exports = {
 			partten: /throw\s+(new\s+)?[a-zA-Z]+Error\s*\(/g,
 			replacement: () => 'return;('
 		}]),
-		// new OfflinePlugin({
-		// 	relativePaths: false,
-		// 	AppCache: false,
-		// 	excludes: ['_redirects'],
-		// 	ServiceWorker: {
-		// 		events: true
-		// 	},
-		// 	cacheMaps: [
-		// 		{
-		// 			match: /.*/,
-		// 			to: '/',
-		// 			requestTypes: ['navigate']
-		// 		}
-		// 	],
-		// 	publicPath: publicPath
-		// })
 	] : []),
 
 	stats: { colors: true },
@@ -201,20 +193,4 @@ module.exports = {
 	},
 
 	devtool: ENV==='production' ? 'source-map' : 'cheap-module-eval-source-map',
-
-	devServer: {
-		port: process.env.PORT || 8080,
-		host: 'localhost',
-		publicPath: '/',
-		contentBase: './src',
-		historyApiFallback: true,
-		open: true,
-		proxy: {
-			// OPTIONAL: proxy configuration:
-			// '/optional-prefix/**': { // path pattern to rewrite
-			//   target: 'http://target-host.com',
-			//   pathRewrite: path => path.replace(/^\/[^\/]+\//, '')   // strip first path segment
-			// }
-		}
-	}
 };

@@ -4,7 +4,7 @@
  * has admin access to (or an empty array)
  * params => (none)
  * output => JSON Array of Objects:
- * 			{ (int) id, (string) name }
+ * 			{ (int) id, (string) name, (string) rest_url }
  */
 function nds_restapi_route_get_sites()
 {
@@ -33,7 +33,9 @@ function nds_restapi_get_sites( WP_REST_Request $request )
 
 			return [
 				'id' => (int) $id,
-				'name' => get_blog_details($id)->blogname,
+				// Output single quotes, don't encode as "&#039;"
+				'name' => wp_specialchars_decode(get_blog_details($id)->blogname, ENT_QUOTES),
+				'rest_url' => get_rest_url($id, 'nds/v1/')
 			];
 
 		}, get_sites());
@@ -51,7 +53,9 @@ function nds_restapi_get_sites( WP_REST_Request $request )
 		{
 			return [
 				'id' => $site->userblog_id,
-				'name' => $site->blogname
+				// Output single quotes, don't encode as "&#039;"
+				'name' => wp_specialchars_decode($site->blogname, ENT_QUOTES),
+				'rest_url' => get_rest_url($site->userblog_id, 'nds/v1/')
 			];
 		}, $sites));
 	}

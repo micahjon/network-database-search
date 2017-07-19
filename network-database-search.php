@@ -10,6 +10,9 @@
 /**
  * Register REST APIs
  */
+// Get url of REST API (via admin-ajax, whose url is accessible in browser as window.ajaxurl)
+require 'api/get-sites-api-url.php';
+
 // Get list of sites
 require 'api/get-sites.php';
 
@@ -47,6 +50,15 @@ add_action('admin_menu', function()
  */
 function nds_page_content()
 {
-	echo 'yolo';
+	echo '<script type="text/javascript" src="'. plugin_dir_url( __FILE__ ) . 'preact-ui/build/bundle.js"></script>';
+}
 
+/**
+ * For local development only
+ */
+add_filter('allowed_http_origins', 'add_allowed_origins');
+
+function add_allowed_origins($origins) {
+    $origins[] = 'http://localhost:3000';
+    return $origins;
 }
