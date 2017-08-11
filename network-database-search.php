@@ -11,10 +11,13 @@
  * Register REST APIs
  */
 // Get url of REST API (via admin-ajax, whose url is accessible in browser as window.ajaxurl)
-require 'api/get-sites-api-url.php';
+require 'api/get-rest-api-url.php';
 
 // Get list of sites
 require 'api/get-sites.php';
+
+// Get list of available search queries
+require 'api/get-query-types.php';
 
 // Search sites
 require 'api/search-site.php';
@@ -46,12 +49,18 @@ add_action('admin_menu', function()
 });
 
 /**
- * Generate "Database Search" page HTML
+ * Generate "Database Search" page HTML (client-side using Preact)
  */
 function nds_page_content()
 {
 	echo '<script type="text/javascript" src="'. plugin_dir_url( __FILE__ ) . 'preact-ui/build/bundle.js"></script>';
 }
+
+/**
+ * Register search query types
+ */
+
+// ...............................................
 
 /**
  * For local development only
