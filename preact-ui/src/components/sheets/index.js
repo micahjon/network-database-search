@@ -3,11 +3,6 @@ import style from './style.less';
 import googleSpreadsheet from '../../lib/google-spreadsheet';
 import Clipboard from 'clipboard';
 
-/**
- * This class takes care of fetching the data from Google Spreadsheets
- * It then updates the model in app.js, which propagates down into all
- * other views.
- */
 export default class Sheets extends Component {
 	/**
 	 * Pass initialProps directly from app.js, where a new instance of Sheets 

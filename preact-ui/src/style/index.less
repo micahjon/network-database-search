@@ -1,5 +1,6 @@
 .nds__search {
 	display: flex;
+	height: 30px;
 }
 
 .nds__search-input {
@@ -8,6 +9,22 @@
 	width: 20em;
 }
 
-.nds__button {
-	
+.nds__option {
+	display: inline-block;
+	margin: 0 1em 1em 0;
 }
+
+// Hack to force Select All down to next line w/out taking up full width
+.nds__option--select-all {
+	display: inline;
+}
+.nds__option--select-all:before {
+	content: "\A";
+	white-space: pre;
+}
+
+.nds__button {}
+
+.nds__results {}
+
+.nds__result {}

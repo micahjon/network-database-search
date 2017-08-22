@@ -1,13 +1,8 @@
 import { h, Component } from 'preact';
 import './app';
-// import { route, Router } from 'preact-router';
 // import { publicPath } from '../lib/public-path';
 
-// import Header from './header';
-// import Home from './home';
-// import Events from './events';
-// import Individuals from './individuals';
-// import Sheets from './sheets';
+import SearchOptions from './search-options';
 
 export default class App extends Component {
 	state = {
@@ -19,6 +14,7 @@ export default class App extends Component {
 		// 		active: (boolean) true
 		// }
 		sites: 'Loading sites...',
+
 		// A string (message) or a list of query objects:
 		// {
 		// 		id: (string) posts
@@ -26,18 +22,76 @@ export default class App extends Component {
 		// 		description: (string) Search post titles, content, and slugs. Ignore deleted and draft posts.
 		// }
 		queryTypes: 'Loading search query types...',
+
+		// User-defined search query
+		searchQuery: 'test',
+
+		// API url
+		restAPIUrl: '',
+
+		// Whether a current search is being performed
+		isSearching: false,
+
+		// A string (message) or a list of search result objects:
+		// {
+		// 		??
+		// }
+		results: '',
 	};
 
-	// /**
-	//  * Refresh model every time this tab gains focus
-	//  */
-	// handleVisibilityChange = () => {
-	// 	// Refresh model
-	// 	if (!document.hidden) {
-	// 		if (this.checkForUpdates) this.checkForUpdates();
-	// 		else console.log('this.checkForUpdates is not available');
-	// 	}
-	// };
+	/**
+	 * Generic function to update a piece of state.
+	 * Curried so that component can send back state array/object 
+	 * without knowing what's is called.
+	 * @param  {String} type  Key on state object
+	 * @return {Function}     Function that accepts new state object(s)
+	 */
+	updateOptions(type) {
+		return options => {
+			let newState = {};
+			newState[type] = options;
+			this.setState(newState);
+		};
+	}
+
+	search(event, abc) {
+		event.preventDefault();
+
+		const term = this.state.searchQuery,
+			queryTypes = this.state.queryTypes
+				.filter(type => type.active)
+				.map(({ id }) => id)
+				.join(','),
+			sites = this.state.sites.filter(type => type.active).map(({ id, name }) => {
+				return { id, name, queries: [] };
+			});
+
+		this.setState({ isSearching: true, results: 'Loading search results...' });
+
+		// Make a bunch of parallel requests, but display results sequentially
+		const requests = this.state.sites
+			.filter(site => site.active)
+			.map(({ rest_url }) => {
+				return new Promise(function(resolve, reject) {
+					jQuery.getJSON(`${rest_url}search/`, { term, queryTypes }, resolve, reject);
+				});
+			})
+			.map((request, i) => {
+				request.then(data => {
+					sites[i].queries = data;
+
+					console.log(data);
+
+					this.setState({ results: sites });
+				});
+			});
+
+		// Done searching
+		const endSearch = () => {
+			this.setState({ isSearching: false });
+		};
+		Promise.all(requests).then(endSearch).catch(endSearch);
+	}
 
 	componentDidMount() {
 		// Get list of sites user has access to
@@ -50,6 +104,7 @@ export default class App extends Component {
 			})
 			.done(url => {
 				// Got REST API url
+				this.setState({ restAPIUrl: url });
 
 				// Fetch sites user has privileges to search
 				jQuery
@@ -107,144 +162,67 @@ export default class App extends Component {
 						}
 					});
 			});
-
-		// 	// Go to /sheets/ route if the model isn't ready
-		// 	if (!this.state.events.length || !this.state.registrations.length) {
-		// 		if (Router.getCurrentUrl() !== publicPath + 'sheets/') {
-		// 			// Manually initialize /sheets/ component to fetch model the first time
-		// 			console.log('Manually instantiating Sheets');
-		// 			new Sheets({
-		// 				allowAppToTriggerUpdates: updateFunction => {
-		// 					this.checkForUpdates = updateFunction;
-		// 				},
-		// 				updateAppModel: model => this.setState(model),
-		// 			});
-		// 		}
-		// 	}
-
-		// 	// On tab focus, refresh the model
-		// 	document.addEventListener(
-		// 		'visibilitychange',
-		// 		this.handleVisibilityChange,
-		// 		false
-		// 	);
 	}
-
-	// componentWillUnmount() {
-	// 	// Stop listening to tab focus
-	// 	document.removeEventListener(
-	// 		'visibilitychange',
-	// 		this.handleVisibilityChange
-	// 	);
-	// }
 
 	render(props, state) {
 		return (
 			<div id="app" class="wrap nds">
 				<h1>Network Database Search</h1>
-				<form class="nds__search-form">
+				<form class="nds__search-form" onSubmit={this.search.bind(this)}>
 					<h2>Search</h2>
 					<div class="nds__search">
 						<input
 							type="search"
 							name="term"
 							class="nds__search-input"
+							value={state.searchQuery}
+							onChange={event => {
+								this.setState({ searchQuery: event.target.value });
+							}}
+							onKeyUp={event => {
+								this.setState({ searchQuery: event.target.value });
+							}}
 						/>
 						<input
 							class="button-primary nds__button"
 							type="submit"
 							value="Search"
 							autocomplete="off"
+							disabled={state.searchQuery.length < 3 || state.isSearching}
 						/>
 					</div>
 					<h2>Sites</h2>
-					{// Sites have loaded
-					(jQuery.isArray(state.sites) &&
-						<div class="nds__sites">
-							{state.sites.map(site => {
-								return (
-									<label style="margin-right: 1em;">
-										<input
-											type="checkbox"
-											checked={site.active}
-											onChange={evt => {
-												const checked = evt.target.checked;
-												site.active = checked;
-												this.setState({
-													sites: state.sites,
-												});
-											}}
-										/>
-										{site.name}
-									</label>
-								);
-							})}
-							<br /><br />
-							<label>
-								<input
-									type="checkbox"
-									checked={state.sites.every(site => {
-										return site.active;
-									})}
-									onChange={evt => {
-										const checked = evt.target.checked;
-										this.setState({
-											sites: state.sites.map(site => {
-												site.active = checked;
-												return site;
-											}),
-										});
-									}}
-								/> <em>Select All</em>
-							</label>
-						</div>) ||
-						// Sites are loading or something went wrong
-						<p>{state.sites}</p>}
-						<h2>Search Queries</h2>
-						{(jQuery.isArray(state.queryTypes) &&
-						<div class="nds__sites">
-							{state.queryTypes.map(queryType => {
-								return (
-									<label style="margin-right: 1em;">
-										<input
-											type="checkbox"
-											checked={queryType.active}
-											onChange={evt => {
-												const checked = evt.target.checked;
-												queryType.active = checked;
-												this.setState({
-													queryTypes: state.queryTypes,
-												});
-											}}
-										/>
-										{queryType.name}
-									</label>
-								);
-							})}
-							<br /><br />
-							<label>
-								<input
-									type="checkbox"
-									checked={state.queryTypes.every(queryType => {
-										return queryType.active;
-									})}
-									onChange={evt => {
-										const checked = evt.target.checked;
-										this.setState({
-											queryTypes: state.queryTypes.map(queryType => {
-												queryType.active = checked;
-												return queryType;
-											}),
-										});
-									}}
-								/> <em>Select All</em>
-							</label>
-						</div>) ||
-						// queryTypes are loading or something went wrong
-						<p>{state.queryTypes}</p>}
+					<SearchOptions
+						options={state.sites}
+						updateOptions={this.updateOptions('sites')}
+					/>
+					<h2>Search Queries</h2>
+					<SearchOptions
+						options={state.queryTypes}
+						updateOptions={this.updateOptions('queryTypes')}
+					/>
 				</form>
 				<h2>Results</h2>
-				...
+				{(typeof state.results === 'object' &&
+					<div>
+						{state.results.map(({ name, id, queries }) => (
+							<div>
+								<h4>{name}</h4>
+								{queries.map(query => {
+									const queryType = Object.keys(query)[0];
+									return (
+										<div>
+											<h5>{queryType}</h5>
+											{query[queryType].map(queryResults => {
+												return JSON.stringify(queryResults);
+											})}
+										</div>
+									);
+								})}
+							</div>
+						))}
+					</div>) ||
+					<p>{state.results}</p>}
 			</div>
 		);
 	}
