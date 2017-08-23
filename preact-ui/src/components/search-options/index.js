@@ -1,5 +1,4 @@
 import { h, Component } from 'preact';
-import style from './style.less';
 
 export default function SearchOptions({ options, updateOptions }) {
 	return (

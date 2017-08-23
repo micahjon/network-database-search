@@ -3,6 +3,7 @@ import './app';
 // import { publicPath } from '../lib/public-path';
 
 import SearchOptions from './search-options';
+import Results from './results';
 
 export default class App extends Component {
 	state = {
@@ -24,7 +25,7 @@ export default class App extends Component {
 		queryTypes: 'Loading search query types...',
 
 		// User-defined search query
-		searchQuery: 'test',
+		searchQuery: 'Micah',
 
 		// API url
 		restAPIUrl: '',
@@ -80,7 +81,7 @@ export default class App extends Component {
 				request.then(data => {
 					sites[i].queries = data;
 
-					console.log(data);
+					// console.log(data);
 
 					this.setState({ results: sites });
 				});
@@ -162,6 +163,12 @@ export default class App extends Component {
 						}
 					});
 			});
+
+			setTimeout(() => {
+
+				jQuery('.nds__search input[type="submit"]').click();
+
+			}, 500);
 	}
 
 	render(props, state) {
@@ -203,26 +210,7 @@ export default class App extends Component {
 					/>
 				</form>
 				<h2>Results</h2>
-				{(typeof state.results === 'object' &&
-					<div>
-						{state.results.map(({ name, id, queries }) => (
-							<div>
-								<h4>{name}</h4>
-								{queries.map(query => {
-									const queryType = Object.keys(query)[0];
-									return (
-										<div>
-											<h5>{queryType}</h5>
-											{query[queryType].map(queryResults => {
-												return JSON.stringify(queryResults);
-											})}
-										</div>
-									);
-								})}
-							</div>
-						))}
-					</div>) ||
-					<p>{state.results}</p>}
+				<Results results={state.results} />
 			</div>
 		);
 	}
