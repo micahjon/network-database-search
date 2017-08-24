@@ -25,7 +25,7 @@ export default class App extends Component {
 		queryTypes: 'Loading search query types...',
 
 		// User-defined search query
-		searchQuery: 'Micah',
+		searchQuery: 'omi',
 
 		// API url
 		restAPIUrl: '',
@@ -79,10 +79,9 @@ export default class App extends Component {
 			})
 			.map((request, i) => {
 				request.then(data => {
-					sites[i].queries = data;
-
 					// console.log(data);
 
+					sites[i].queries = data;
 					this.setState({ results: sites });
 				});
 			});
@@ -164,11 +163,10 @@ export default class App extends Component {
 					});
 			});
 
-			setTimeout(() => {
-
-				jQuery('.nds__search input[type="submit"]').click();
-
-			}, 500);
+		// Development HACK
+		setTimeout(() => {
+			jQuery('.nds__search input[type="submit"]').click();
+		}, 800);
 	}
 
 	render(props, state) {
@@ -210,7 +208,7 @@ export default class App extends Component {
 					/>
 				</form>
 				<h2>Results</h2>
-				<Results results={state.results} />
+				<Results results={state.results} searchQuery={state.searchQuery} />
 			</div>
 		);
 	}

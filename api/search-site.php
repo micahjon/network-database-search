@@ -1,14 +1,14 @@
 <?php
 /**
- * Helper functions used for database search queries
+ * Helper functions used for database search queryTypes
  */
-require 'queries.php';
+require 'queryTypes.php';
 
 /**
  * Searches site database table(s) for specified string
  * params:
  * 		- term (string to search for)
- * 		- queries (database queries to run - each corresponds to a function)
+ * 		- queryTypes (database query types to run - each corresponds to a function)
  * 	
  * output: 
  * 		JSON Array of Objects:
@@ -32,24 +32,24 @@ function nds_restapi_route_search_site()
 					return strlen($term) >= 3;
 				}
 			],
-			'queries' => [
+			'queryTypes' => [
 				'required' => true,
 				'type' => 'string',
-				'validate_callback' => function($queries)
+				'validate_callback' => function($queryTypes)
 				{
-					if ( empty($queries) ) return false;
+					if ( empty($queryTypes) ) return false;
 
 					// Get query names from comma-separated string
-					$queries = array_map('trim', explode(',', $queries));
+					$queryTypes = array_map('trim', explode(',', $queryTypes));
 
-					// Ensure there are no duplicate queries
-					if ( count($queries) !== count(array_unique($queries)) ) {
+					// Ensure there are no duplicate queryTypes
+					if ( count($queryTypes) !== count(array_unique($queryTypes)) ) {
 						return new WP_Error('nds_invalid_query', "Duplicate query", ['status' => 400]);
 					}
 
 					// Each query must correspond to a function
 					// e.g. 'posts,postmeta' correspond to nds_query_posts() & nds_query_postmeta()
-					foreach ($queries as $query) {
+					foreach ($queryTypes as $query) {
 						if ( !function_exists('nds_query_'. $query) ) {
 							return new WP_Error('nds_invalid_query', "Query '{$query}' has no corresponding function: nds_query_{$query}()", ['status' => 400]);
 						}
@@ -62,7 +62,8 @@ function nds_restapi_route_search_site()
 		'permission_callback' => function()
 		{
 			global $ndsUserId;
-			return is_super_admin($ndsUserId) or current_user_can('administrator');
+
+			return is_super_admin($ndsUserId) or user_can($ndsUserId, 'administrator');
 		}
 	]);
 }
@@ -74,15 +75,20 @@ function nds_restapi_search_site( WP_REST_Request $request )
 	// Get search term
 	$term = $request['term'];
 
-	// Get names of search queries
-	$queryNames = array_map('trim', explode(',', $request['queries']));
+	// Get names of search queryTypes
+	$queryNames = array_map('trim', explode(',', $request['queryTypes']));
 	
 	// Get search results
-	$results = array_map(function($queryName) use ($term)
-	{
-		return [ $queryName => call_user_func("nds_query_{$queryName}", $term) ];
-	}, 
-	$queryNames);
+	$results = [];
+	foreach ($queryNames as $queryName) {
+		$results[$queryName] = call_user_func("nds_query_{$queryName}", $term);
+	}
+
+	// array_map(function($queryName) use ($term)
+	// {
+	// 	return [ $queryName => call_user_func("nds_query_{$queryName}", $term) ];
+	// }, 
+	// $queryNames);
 	
 	return new WP_REST_Response($results , 200);
 }

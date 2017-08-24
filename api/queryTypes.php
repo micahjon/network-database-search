@@ -8,7 +8,7 @@ function nds_query_posts($term, $limit = 10)
 
 	$results = $wpdb->get_results($wpdb->prepare(
 		"
-		SELECT id, post_content, post_name, post_title, post_type, post_status
+		SELECT id, post_content, post_name, post_title, post_type
 		FROM {$table}
 		WHERE post_type NOT IN ('acf-field', 'acf-field-group', 'revision')
 		AND post_status NOT IN ('draft', 'trash', 'auto-draft')
@@ -27,8 +27,9 @@ function nds_query_posts($term, $limit = 10)
 
 	return array_map(function($result) use ($term)
 	{
-		// Add permalink
+		// Add permalink and editlink
 		$result->permalink = get_permalink($result->id);
+		$result->editlink = admin_url('post.php?post='. $result->id .'&action=edit');
 
 		// Clip post content
 		$result = nds_clip_property($result, 'post_content', $term);
@@ -62,8 +63,9 @@ function nds_query_postmeta($term, $limit = 10)
 
 	return array_map(function($result) use ($term)
 	{
-		// Add permalink
+		// Add permalink and editlink
 		$result->permalink = get_permalink($result->post_id);
+		$result->editlink = admin_url('post.php?post='. $result->post_id .'&action=edit');
 
 		// Clip meta value
 		$result = nds_clip_property($result, 'meta_value', $term);
