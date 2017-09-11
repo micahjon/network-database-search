@@ -14,16 +14,18 @@ export default function Results({ results, searchQuery, queryTypes }) {
 	 * @return {JSX}        			A JSX template
 	 */
 	const highlightAndLabel = (string, label) => {
-		let containerClass = style.result__hiddenAttribute,
+		let classes = [style.result__attribute],
 			value = string;
 
 		if (string !== '(omitted)' && searchRegex.test(string)) {
-			containerClass = '';
 			value = <Highlight search={searchQuery}>{string}</Highlight>;
+		}
+		else {
+			classes.push(style.result__hiddenAttribute);
 		}
 
 		return (
-			<div class={containerClass}>
+			<div class={classes.join(' ')}>
 				<span class={style.result__label}>{label}</span>:{' '}
 				<span class={style.result__value}>{value}</span>
 			</div>
@@ -61,6 +63,8 @@ export default function Results({ results, searchQuery, queryTypes }) {
 		 */
 		const inputId = 'input--' + ((Math.random() * 100000001) | 0);
 
+		// console.log(result);
+
 		return (
 			<div class={style.result}>
 				<a class={style.result__link} href={result.__link} target="_blank">
@@ -89,72 +93,6 @@ export default function Results({ results, searchQuery, queryTypes }) {
 					})}
 			</div>
 		);
-
-		// switch (queryType) {
-		// 	case 'posts':
-		// 		return (
-		// 			<div>
-		// 				<h4>{highlightAndLabel(data.post_title)} ({data.post_type} #{data.id})</h4>
-		// 				<div>
-		// 					<a href={data.permalink}>View</a> | <a href={data.editlink}>Edit</a>
-		// 				</div>
-		// 				<div>{highlightAndLabel(data.post_name, `Slug`)}</div>
-		// 				<div>{highlightAndLabel(data.post_content, `Content`)}</div>
-		// 			</div>
-		// 		);
-		// 		break;
-
-		// case 'postmeta':
-		// 	return (
-		// 		<div>
-		// 			<h4>{data.meta_key} ({data.post_type} #{data.post_id})</h4>
-		// 			<div>
-		// 				<a href={data.permalink}>View</a> | <a href={data.editlink}>Edit</a>
-		// 			</div>
-		// 			<div>{highlightAndLabel(data.meta_value, `Meta Value`)}</div>
-		// 		</div>
-		// 	);
-		// 	break;
-
-		// case 'options':
-		// 	return (
-		// 		<div>
-		// 			<h4>{data.option_name} (option)</h4>
-		// 			<div>{highlightAndLabel(data.option_value, `Option Value`)}</div>
-		// 		</div>
-		// 	);
-
-		// case 'gravityforms':
-		// 	return (
-		// 		<div>
-		// 			<h4>{data.title} (Form #{data.id}) ({data.is_trash === '1' ? 'trashed' : (data.is_active === '1' ? 'active' : 'deactivated')})</h4>
-		// 			<div>
-		// 				<a href={data.editlink}>Edit</a>
-		// 			</div>
-		// 			<div>{highlightAndLabel(data.display_meta, `Fields & Settings`)}</div>
-		// 			<div>{highlightAndLabel(data.confirmations, `Confirmations`)}</div>
-		// 			<div>{highlightAndLabel(data.notifications, `Notifications`)}</div>
-		// 		</div>
-		// 	);
-
-		// case 'gravityformentries':
-
-		// 	console.log(data);
-		// 	return (
-		// 		<div>
-		// 			<h4>{data.title} (Form #{data.id}) ({data.is_trash === '1' ? 'trashed' : (data.is_active === '1' ? 'active' : 'deactivated')})</h4>
-		// 			<div>
-		// 				<a href={data.editlink}>Edit</a>
-		// 			</div>
-		// 			<div>{highlightAndLabel(data.display_meta, `Fields & Settings`)}</div>
-		// 			<div>{highlightAndLabel(data.confirmations, `Confirmations`)}</div>
-		// 			<div>{highlightAndLabel(data.notifications, `Notifications`)}</div>
-		// 		</div>
-		// 	);
-
-		// 	default:
-		// 		return <div>othesr</div>;
-		// }
 	};
 
 	function escapeRegExp(str) {
