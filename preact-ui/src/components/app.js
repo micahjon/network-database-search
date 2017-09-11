@@ -25,7 +25,7 @@ export default class App extends Component {
 		queryTypes: 'Loading search query types...',
 
 		// User-defined search query
-		searchQuery: 'omi',
+		searchQuery: 'abc',
 
 		// API url
 		restAPIUrl: '',
@@ -208,7 +208,7 @@ export default class App extends Component {
 					/>
 				</form>
 				<h2>Results</h2>
-				<Results results={state.results} searchQuery={state.searchQuery} />
+				<Results results={state.results} searchQuery={state.searchQuery} queryTypes={state.queryTypes} />
 			</div>
 		);
 	}

@@ -27,9 +27,8 @@ function nds_query_posts($term, $limit = 10)
 
 	return array_map(function($result) use ($term)
 	{
-		// Add permalink and editlink
-		$result->permalink = get_permalink($result->id);
-		$result->editlink = admin_url('post.php?post='. $result->id .'&action=edit');
+		$result->__title = 'post_title';
+		$result->__link = get_edit_post_link($result->id, '');
 
 		// Clip post content
 		$result = nds_clip_property($result, 'post_content', $term);
@@ -48,7 +47,7 @@ function nds_query_postmeta($term, $limit = 10)
 
 	$results = $wpdb->get_results( $wpdb->prepare(
 		"
-		SELECT posts.post_title, postmeta.post_id, postmeta.meta_key, postmeta.meta_value, posts.post_type
+		SELECT postmeta.post_id, postmeta.meta_key, postmeta.meta_value
 		FROM {$postmetaTable} AS postmeta
 		INNER JOIN {$postsTable} AS posts 
 			ON posts.id = postmeta.post_id
@@ -63,9 +62,7 @@ function nds_query_postmeta($term, $limit = 10)
 
 	return array_map(function($result) use ($term)
 	{
-		// Add permalink and editlink
-		$result->permalink = get_permalink($result->post_id);
-		$result->editlink = admin_url('post.php?post='. $result->post_id .'&action=edit');
+		$result->__title = 'meta_key';
 
 		// Clip meta value
 		$result = nds_clip_property($result, 'meta_value', $term);
@@ -94,6 +91,8 @@ function nds_query_options($term, $limit = 10)
 
 	return array_map(function($result) use ($term)
 	{
+		$result->__title = 'option_name';
+
 		// Clip option value
 		$result = nds_clip_property($result, 'option_value', $term);
 
@@ -131,8 +130,12 @@ function nds_query_gravityforms($term, $limit = 10)
 
 	return array_map(function($result) use ($term)
 	{
+		$result->__title = 'title';
+		$result->__link = admin_url('admin.php?page=gf_edit_forms&id='. $result->id);
+
 		// Clip gravity form settings & fields, confirmations, and notifications
 		$tables = ['display_meta', 'confirmations', 'notifications'];
+
 		foreach ($tables as $table) {
 			$result = nds_clip_property($result, $table, $term);
 		}
@@ -151,12 +154,9 @@ function nds_query_gravityformentries($term, $limit = 10)
 
 	$results = $wpdb->get_results( $wpdb->prepare(
 		"
-		SELECT  form.id, form.title, form.is_active, form.is_trash, 
-				entry.lead_id, entry.field_number, entry.value
-		FROM {$formTable} as form
-		INNER JOIN {$entryTable} AS entry
-			ON form.id = entry.form_id
-		WHERE entry.value LIKE '%%%s%%'
+		SELECT form_id, lead_id, field_number, value
+		FROM {$entryTable}
+		WHERE value LIKE '%%%s%%'
 		LIMIT %d
 		",
 		$term,
@@ -165,6 +165,9 @@ function nds_query_gravityformentries($term, $limit = 10)
 
 	return array_map(function($result) use ($term)
 	{
+		$result->__title = 'Entry #'. $result->lead_id;
+		$result->__link = admin_url('admin.php?page=gf_entries&view=entry&id='. $result->form_id .'&lid='. $result->lead_id);
+
 		// Clip entry field value
 		$result = nds_clip_property($result, 'value', $term);
 

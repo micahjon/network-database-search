@@ -1,0 +1,120 @@
+.results {
+	width: 100%;
+	float: left;
+	clear: both;
+}
+.results__title {
+
+}
+
+.result {
+	max-width: 100%;
+	width: 30em;
+	float: left;
+	
+	margin: 0 1em 1em 0;
+
+	background: white;
+	box-shadow: 1px 1px 5px 0px #E0E0E0;
+	transition: box-shadow .3s;
+
+	&:hover, &:focus {
+		box-shadow: 1px 1px 5px 0px #BDBDBD;
+		transition: box-shadow .6s ease;
+
+		.result__editLinkIcon {
+			color: #616161;
+			transition: color .6s ease;
+		}
+	}
+
+	.result {
+		border-top: 1px solid #F5F5F5;
+		box-shadow: none !important;
+		padding-left: 1em;
+	}
+}
+
+.result__link {
+	position: relative; // contain .result__expand
+	display: block;
+	padding: 1em;
+
+	color: inherit;
+	text-decoration: none;
+	word-wrap: break-word;
+
+	&:hover, &:focus {
+		color: inherit;
+	}
+}
+
+.result__title {
+	margin: .25em 0 .5em;
+}
+.result__childrenTitle {
+	margin: .25em 0 .5em 2em;
+}
+
+.result__label {
+	color: #757575;
+}
+
+.result__editLinkIcon {
+	position: absolute;
+	top: 0.5em;
+	right: 0.5em;
+	display: block;
+	color: #CECECE;
+	transition: color .3s;
+}
+.result__link:not([href]) .result__editLinkIcon {
+	display: none;
+}
+
+
+// $gray-200: #EEEEEE;
+// $gray-300: #E0E0E0;
+// $gray-350: #CECECE;
+// $gray-400: #BDBDBD;
+// $gray-500: #9E9E9E;
+// $gray-600: #757575;
+// $gray-700: #616161;
+
+/**
+ * Display hidden attributes when hidden <input>'s label is clicked
+ */
+.result__expandLabel {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	display: block;
+
+	font-family: monospace;
+	vertical-align: middle;
+	font-size: 1.5em;
+	padding: .5em .75em;
+
+	:before {
+		display: block;
+		content: "+";
+	}
+
+	background-color: #F5F5F5;
+
+	&:hover, &:focus {
+		background-color: #EEEEEE;
+	}
+}
+.result__expandInput {
+	display: none !important;
+}
+.result__expandInput:not(:checked) ~ .result__hiddenAttribute {
+	display: none;
+}
+.result__expandInput:checked ~ .result__expandLabel {
+	display: none;
+}
+
+.result__child {}
+
