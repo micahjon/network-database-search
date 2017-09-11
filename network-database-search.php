@@ -7,6 +7,8 @@
 	Author URI: http://micahjon.com
 */				
 
+require 'queries.php';
+
 /**
  * Register REST APIs
  */
@@ -21,6 +23,12 @@ require 'api/get-query-types.php';
 
 // Search sites
 require 'api/search-site.php';
+
+// Filters for common result manipulations
+require 'filters/add-edit-links.php';
+require 'filters/add-titles.php';
+require 'filters/clip-long-fields.php';
+require 'filters/parent-child-objects.php';
 
 /**
  * Add "Database Search" menu item under Settings on both Site Dashboard and Network Dashboard menus
