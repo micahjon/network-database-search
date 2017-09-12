@@ -61,8 +61,12 @@ add_action('admin_menu', function()
  * Generate "Database Search" page HTML (client-side using Preact)
  */
 function nds_page_content()
-{
-	echo '<script type="text/javascript" src="'. plugin_dir_url( __FILE__ ) . 'preact-ui/build/bundle.js"></script>';
+{ ?>
+
+	<link rel="stylesheet" type="text/css" href="<?php echo plugin_dir_url( __FILE__ ); ?>preact-ui/build/style.css">
+	<script type="text/javascript" src="<?php echo plugin_dir_url( __FILE__ ); ?>preact-ui/build/bundle.js"></script>
+
+<?php 
 }
 
 /**
