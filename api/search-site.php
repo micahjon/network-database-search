@@ -15,7 +15,7 @@ function nds_restapi_route_search_site()
 	$ndsUserId = get_current_user_id();
 
 	// Just for testing
-	$ndsUserId  = 124;
+	// $ndsUserId  = 124;
 
 	register_rest_route( 'nds/v1', '/search/', [
 		'methods' => 'GET',

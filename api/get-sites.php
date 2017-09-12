@@ -12,7 +12,7 @@ function nds_restapi_route_get_sites()
 	$ndsUserId = get_current_user_id();
 
 	// Just for testing
-	$ndsUserId = 124;
+	// $ndsUserId = 124;
 
 	register_rest_route( 'nds/v1', '/get-sites', [
 		'methods' => 'GET',

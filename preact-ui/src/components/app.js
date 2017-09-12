@@ -174,9 +174,9 @@ export default class App extends Component {
 			});
 
 		// Development HACK
-		setTimeout(() => {
-			jQuery('.nds__search input[type="submit"]').click();
-		}, 800);
+		// setTimeout(() => {
+		// 	jQuery('.nds__search input[type="submit"]').click();
+		// }, 800);
 	}
 
 	render(props, state) {

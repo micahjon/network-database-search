@@ -20,7 +20,7 @@ function nds_restapi_get_query_types( WP_REST_Request $request )
 		['id' => 'posts', 'name' => 'Posts', 'description' => 'Search post titles, content, and slugs. Ignore deleted and draft posts.'],
 		['id' => 'postmeta', 'name' => 'Custom Fields', 'description' => 'Search all custom fields.'],
 		['id' => 'options', 'name' => 'Options', 'description' => 'Search Wordpress site & plugin settings.'],
-		['id' => 'gravityforms', 'name' => 'Gravity Form Settings', 'description' => 'Search Gravity Form confirmations, notifications, and fields.'],
+		['id' => 'gravityforms', 'name' => 'Gravity Forms', 'description' => 'Search Gravity Form confirmations, notifications, and fields.'],
 		['id' => 'gravityformentries', 'name' => 'Gravity Form Entries', 'description' => 'Search Gravity Form entries.'],
 	];
 
