@@ -16,9 +16,38 @@
 	width: 20em;
 }
 
+.nds__options-title {
+	display: inline-block;
+}
+.nds__select-all {
+	margin: 0 1em;
+	vertical-align: text-bottom;
+}
+
+.nds__options {
+	column-width: 11em;
+}
+// @media (min-width: 800px) {
+// 	.nds__options {
+// 		column-width: 10em;
+// 	}	
+// }
+
 .nds__option {
 	display: inline-block;
 	margin: 0 1em 1em 0;
+	padding: 4px 0 0 2.25em;
+	input {
+		margin-left: -2.25em;
+	}
+}
+@media (min-width: 800px) {
+	.nds__option {
+		padding-left: 1.5em;
+		input {
+			margin-left: -1.5em;
+		}
+	}
 }
 
 // Hack to force Select All down to next line w/out taking up full width

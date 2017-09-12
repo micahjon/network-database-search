@@ -1,7 +1,5 @@
 import { h, Component } from 'preact';
 import './app';
-// import { publicPath } from '../lib/public-path';
-
 import SearchOptions from './search-options';
 import Results from './results';
 
@@ -37,9 +35,10 @@ export default class App extends Component {
 		isSearching: false,
 
 		// A string (message) or a list of search result objects:
-		// {
-		// 		??
-		// }
+		// [
+		// 		{id: 1, name: "Goshen College", queries: {…}},
+		// 		{id: 4, name: "New & Events", queries: {…}},
+		// ]
 		results: '',
 	};
 
@@ -90,6 +89,8 @@ export default class App extends Component {
 
 					sites[i].queries = data;
 					this.setState({ results: sites });
+
+					console.log(sites);
 				});
 			});
 
@@ -208,13 +209,13 @@ export default class App extends Component {
 							disabled={state.newSearchQuery.length < 3 || state.isSearching}
 						/>
 					</div>
-					<h2>Sites</h2>
 					<SearchOptions
+						title="Sites"
 						options={state.sites}
 						updateOptions={this.updateOptions('sites')}
 					/>
-					<h2>Search Queries</h2>
 					<SearchOptions
+						title="Search Queries"
 						options={state.queryTypes}
 						updateOptions={this.updateOptions('queryTypes')}
 					/>

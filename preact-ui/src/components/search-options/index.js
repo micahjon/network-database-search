@@ -1,26 +1,11 @@
 import { h, Component } from 'preact';
 
-export default function SearchOptions({ options, updateOptions }) {
+export default function SearchOptions({ title, options, updateOptions }) {
 	return (
-		(Array.isArray(options) &&
-			<div class="nds__options">
-				{options.map(option => {
-					return (
-						<label class="nds__option">
-							<input
-								type="checkbox"
-								checked={option.active}
-								onChange={evt => {
-									const checked = evt.target.checked;
-									option.active = checked;
-									updateOptions(options);
-								}}
-							/>
-							{option.name}
-						</label>
-					);
-				})}
-				<label class="nds__option nds__option--select-all">
+		(Array.isArray(options) && (
+			<div>
+				<h2 class="nds__options-title">{title}</h2>
+				<label class="nds__select-all">
 					<input
 						type="checkbox"
 						checked={options.every(option => {
@@ -35,9 +20,30 @@ export default function SearchOptions({ options, updateOptions }) {
 								})
 							);
 						}}
-					/> <em>Select All</em>
+					/>{' '}
+					<em>Select All</em>
 				</label>
-			</div>) ||
-		<p>{options}</p>
+				<ul class="nds__options">
+					{options.map(option => {
+						return (
+							<li>
+								<label class="nds__option">
+									<input
+										type="checkbox"
+										checked={option.active}
+										onChange={evt => {
+											const checked = evt.target.checked;
+											option.active = checked;
+											updateOptions(options);
+										}}
+									/>
+									{option.name}
+								</label>
+							</li>
+						);
+					})}
+				</ul>
+			</div>
+		)) || <p>{options}</p>
 	);
 }
