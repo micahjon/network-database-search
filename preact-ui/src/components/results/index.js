@@ -1,10 +1,19 @@
 import { h, Component } from 'preact';
 import Highlight from 'react-highlighter';
 import style from './style.less';
-// import { decode } from 'he';
 
-export default function Results({ results, searchQuery, queryTypes }) {
-	const searchRegex = new RegExp(escapeRegExp(searchQuery), 'i');
+export default function Results({ site, results, searchQuery, queryTypes }) {
+	const searchRegex = new RegExp(escapeRegExp(searchQuery), 'i'),
+		totalResults = Object.keys(results).reduce((acc, queryType) => {
+			return (acc += results[queryType].length);
+		}, 0);
+
+	let classes = [style.results];
+	if ( !totalResults ) {
+		classes.push(style['results--empty']);
+	}
+
+	// console.log('render Results', site, Object.keys(results));
 
 	/**
 	 * Highlight search query in string and prepend label
@@ -19,8 +28,7 @@ export default function Results({ results, searchQuery, queryTypes }) {
 
 		if (string !== '(omitted)' && searchRegex.test(string)) {
 			value = <Highlight search={searchQuery}>{string}</Highlight>;
-		}
-		else {
+		} else {
 			classes.push(style.result__hiddenAttribute);
 		}
 
@@ -40,7 +48,7 @@ export default function Results({ results, searchQuery, queryTypes }) {
 	const getTitle = result => {
 		if (!result.__title) {
 			console.warn('Search result missing __title property', result);
-			return '';
+			return <h3 class={style.result__title} />;
 		} else if (result[result.__title]) {
 			// __title generally just references another key (e.g. post_title) whose value
 			// should be displayed as the title
@@ -84,7 +92,9 @@ export default function Results({ results, searchQuery, queryTypes }) {
 						// Child objects
 						return (
 							<div>
-								<h4 class={style.result__childrenTitle}>{queryTypes.find(obj => obj.id === key).name}:</h4>
+								<h4 class={style.result__childrenTitle}>
+									{queryTypes.find(obj => obj.id === key).name}:
+								</h4>
 								{result[key].map(child => {
 									return resultTemplate(child, key);
 								})}
@@ -100,30 +110,24 @@ export default function Results({ results, searchQuery, queryTypes }) {
 	}
 
 	return (
-		(typeof results === 'object' && (
-			<div>
-				{results.map(({ name, queries }) => (
-					<div>
-						<hr />
-						<h4>{name}</h4>
-						{Object.keys(queries).map(queryType => {
-							const amount = queries[queryType].length;
-							if (!amount) return;
+		<div class={classes.join(' ')}>
+			<h4 class={style.results__siteTitle}>{site}</h4>
+			{totalResults &&
+				Object.keys(results).map(queryType => {
+					const amount = results[queryType].length;
+					if (!amount) return '';
 
-							return (
-								<div class={style.results}>
-									<p class={style.results__title}>
-										{queryTypes.find(obj => obj.id === queryType).name}: {amount}
-									</p>
-									{queries[queryType].map(resultObject => {
-										return resultTemplate(resultObject, queryType);
-									})}
-								</div>
-							);
-						})}
-					</div>
-				))}
-			</div>
-		)) || <p>{results}</p>
+					return (
+						<div class={style.results__group}>
+							<p class={style.results__groupTitle}>
+								{queryTypes.find(obj => obj.id === queryType).name}: {amount}
+							</p>
+							{results[queryType].map(resultObject => {
+								return resultTemplate(resultObject, queryType);
+							})}
+						</div>
+					);
+				}) || <p class={style.results__empty}>No results</p>}
+		</div>
 	);
 }

@@ -24,8 +24,11 @@ export default class App extends Component {
 		// }
 		queryTypes: 'Loading search query types...',
 
-		// User-defined search query
-		searchQuery: 'abc',
+		// Last-searched query
+		searchQuery: '',
+
+		// What's currently typed in the search box
+		newSearchQuery: '',
 
 		// API url
 		restAPIUrl: '',
@@ -55,10 +58,10 @@ export default class App extends Component {
 		};
 	}
 
-	search(event, abc) {
+	search(event) {
 		event.preventDefault();
 
-		const term = this.state.searchQuery,
+		const term = this.state.newSearchQuery,
 			queryTypes = this.state.queryTypes
 				.filter(type => type.active)
 				.map(({ id }) => id)
@@ -67,7 +70,11 @@ export default class App extends Component {
 				return { id, name, queries: [] };
 			});
 
-		this.setState({ isSearching: true, results: 'Loading search results...' });
+		this.setState({
+			isSearching: true,
+			results: 'Loading search results...',
+			searchQuery: term,
+		});
 
 		// Make a bunch of parallel requests, but display results sequentially
 		const requests = this.state.sites
@@ -90,7 +97,9 @@ export default class App extends Component {
 		const endSearch = () => {
 			this.setState({ isSearching: false });
 		};
-		Promise.all(requests).then(endSearch).catch(endSearch);
+		Promise.all(requests)
+			.then(endSearch)
+			.catch(endSearch);
 	}
 
 	componentDidMount() {
@@ -149,7 +158,8 @@ export default class App extends Component {
 							});
 						} else if (!queryTypes.length) {
 							this.setState({
-								queryTypes: "Sorry, your user doesn't have access to any query types.",
+								queryTypes:
+									"Sorry, your user doesn't have access to any query types.",
 							});
 						} else {
 							// By default, set all sites to active (searchable)
@@ -170,6 +180,8 @@ export default class App extends Component {
 	}
 
 	render(props, state) {
+		// console.log('render App');
+
 		return (
 			<div id="app" class="wrap nds">
 				<h1>Network Database Search</h1>
@@ -180,12 +192,12 @@ export default class App extends Component {
 							type="search"
 							name="term"
 							class="nds__search-input"
-							value={state.searchQuery}
+							value={state.newSearchQuery}
 							onChange={event => {
-								this.setState({ searchQuery: event.target.value });
+								this.setState({ newSearchQuery: event.target.value });
 							}}
 							onKeyUp={event => {
-								this.setState({ searchQuery: event.target.value });
+								this.setState({ newSearchQuery: event.target.value });
 							}}
 						/>
 						<input
@@ -193,7 +205,7 @@ export default class App extends Component {
 							type="submit"
 							value="Search"
 							autocomplete="off"
-							disabled={state.searchQuery.length < 3 || state.isSearching}
+							disabled={state.newSearchQuery.length < 3 || state.isSearching}
 						/>
 					</div>
 					<h2>Sites</h2>
@@ -207,8 +219,20 @@ export default class App extends Component {
 						updateOptions={this.updateOptions('queryTypes')}
 					/>
 				</form>
-				<h2>Results</h2>
-				<Results results={state.results} searchQuery={state.searchQuery} queryTypes={state.queryTypes} />
+				{this.state.searchQuery && (
+					<h2>
+						Results for <code>{this.state.searchQuery}</code>
+					</h2>
+				)}
+				{(Array.isArray(state.results) &&
+					state.results.map(({ name, queries }, index) => (
+						<Results
+							site={name}
+							results={queries}
+							searchQuery={state.searchQuery}
+							queryTypes={state.queryTypes}
+						/>
+					))) || <p>{state.results}</p>}
 			</div>
 		);
 	}
