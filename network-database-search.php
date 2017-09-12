@@ -28,7 +28,8 @@ require 'api/search-site.php';
 require 'filters/add-edit-links.php';
 require 'filters/add-titles.php';
 require 'filters/clip-long-fields.php';
-require 'filters/parent-child-objects.php';
+require 'filters/group-results/get-missing-parents.php';
+require 'filters/group-results/group-children-with-parents.php';
 
 /**
  * Add "Database Search" menu item under Settings on both Site Dashboard and Network Dashboard menus
