@@ -8,15 +8,13 @@ import path from 'path';
 const ENV = process.env.NODE_ENV || 'development';
 
 const CSS_MAPS = ENV!=='production';
-const publicPath = ENV === 'production' ? '/homecoming-reports/' : '/';
 
 module.exports = {
 	context: path.resolve(__dirname, "src"),
 	entry: './index.js',
 
 	output: {
-		path: path.resolve(__dirname, "build"),
-		publicPath: publicPath,
+		path: path.resolve(__dirname, ENV!=='production' ? "build" : "dist"),
 		filename: 'bundle.js'
 	},
 
