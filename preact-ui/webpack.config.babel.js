@@ -7,31 +7,31 @@ import ReplacePlugin from 'replace-bundle-webpack-plugin';
 import path from 'path';
 const ENV = process.env.NODE_ENV || 'development';
 
-const CSS_MAPS = ENV!=='production';
+const CSS_MAPS = ENV !== 'production';
 
 module.exports = {
-	context: path.resolve(__dirname, "src"),
+	context: path.resolve(__dirname, 'src'),
 	entry: './index.js',
 
 	output: {
-		path: path.resolve(__dirname, ENV!=='production' ? "build" : "dist"),
-		filename: 'bundle.js'
+		path: path.resolve(__dirname, ENV !== 'production' ? 'build' : 'dist'),
+		filename: 'bundle.js',
 	},
 
 	resolve: {
 		extensions: ['.jsx', '.js', '.json', '.less'],
 		modules: [
-			path.resolve(__dirname, "src/lib"),
-			path.resolve(__dirname, "node_modules"),
-			'node_modules'
+			path.resolve(__dirname, 'src/lib'),
+			path.resolve(__dirname, 'node_modules'),
+			'node_modules',
 		],
 		alias: {
-			components: path.resolve(__dirname, "src/components"),    // used for tests
-			style: path.resolve(__dirname, "src/style"),
-			'react': 'preact-compat',
+			components: path.resolve(__dirname, 'src/components'), // used for tests
+			style: path.resolve(__dirname, 'src/style'),
+			react: 'preact-compat',
 			'react-dom': 'preact-compat',
-			'create-react-class': 'preact-compat/lib/create-react-class'
-		}
+			'create-react-class': 'preact-compat/lib/create-react-class',
+		},
 	},
 
 	module: {
@@ -40,12 +40,12 @@ module.exports = {
 				test: /\.jsx?$/,
 				exclude: path.resolve(__dirname, 'src'),
 				enforce: 'pre',
-				use: 'source-map-loader'
+				use: 'source-map-loader',
 			},
 			{
 				test: /\.jsx?$/,
 				exclude: /node_modules/,
-				use: 'babel-loader'
+				use: 'babel-loader',
 			},
 			{
 				// Transform our own .(less|css) files with PostCSS and CSS-modules
@@ -56,23 +56,23 @@ module.exports = {
 					use: [
 						{
 							loader: 'css-loader',
-							options: { modules: true, sourceMap: CSS_MAPS, importLoaders: 1 }
+							options: { modules: true, sourceMap: CSS_MAPS, importLoaders: 1 },
 						},
 						{
 							loader: `postcss-loader`,
 							options: {
 								sourceMap: CSS_MAPS,
 								plugins: () => {
-									autoprefixer({ browsers: [ 'last 2 versions' ] });
-								}
-							}
+									autoprefixer({ browsers: ['last 2 versions'] });
+								},
+							},
 						},
 						{
 							loader: 'less-loader',
-							options: { sourceMap: CSS_MAPS }
-						}
-					]
-				})
+							options: { sourceMap: CSS_MAPS },
+						},
+					],
+				}),
 			},
 			{
 				test: /\.(less|css)$/,
@@ -82,47 +82,47 @@ module.exports = {
 					use: [
 						{
 							loader: 'css-loader',
-							options: { sourceMap: CSS_MAPS, importLoaders: 1 }
+							options: { sourceMap: CSS_MAPS, importLoaders: 1 },
 						},
 						{
 							loader: `postcss-loader`,
 							options: {
 								sourceMap: CSS_MAPS,
 								plugins: () => {
-									autoprefixer({ browsers: [ 'last 2 versions' ] });
-								}
-							}
+									autoprefixer({ browsers: ['last 2 versions'] });
+								},
+							},
 						},
 						{
 							loader: 'less-loader',
-							options: { sourceMap: CSS_MAPS }
-						}
-					]
-				})
+							options: { sourceMap: CSS_MAPS },
+						},
+					],
+				}),
 			},
 			{
 				test: /\.json$/,
-				use: 'json-loader'
+				use: 'json-loader',
 			},
 			{
 				test: /\.(xml|html|txt|md)$/,
-				use: 'raw-loader'
+				use: 'raw-loader',
 			},
 			{
 				test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif)(\?.*)?$/i,
-				use: ENV==='production' ? 'file-loader' : 'url-loader'
-			}
-		]
+				use: ENV === 'production' ? 'file-loader' : 'url-loader',
+			},
+		],
 	},
-	plugins: ([
+	plugins: [
 		new webpack.NoEmitOnErrorsPlugin(),
 		new ExtractTextPlugin({
 			filename: 'style.css',
 			allChunks: true,
-			disable: ENV !== 'production'
+			disable: ENV !== 'production',
 		}),
 		new webpack.DefinePlugin({
-			'process.env.NODE_ENV': JSON.stringify(ENV)
+			'process.env.NODE_ENV': JSON.stringify(ENV),
 		}),
 		// new HtmlWebpackPlugin({
 		// 	template: './index.ejs',
@@ -131,54 +131,68 @@ module.exports = {
 		new BrowserSyncPlugin({
 			proxy: {
 				target: 'http://gc.edu/wp-admin/network/settings.php?page=network-database-search',
+				proxyReq: [
+					proxyReq => {
+						proxyReq.setHeader('X_NDS_DEV_ENVIRONMENT', 'yup');
+					},
+				],
+				// proxyRes: [
+				// 	(proxyRes, req, res) => {
+				// 		console.log('headers:', proxyRes.headers);
+				// 	},
+				// ],
 			},
-			files: [
-				'../**/*.php'
-			],
-			reloadDelay: 0
+			files: ['../**/*.php'],
+			reloadDebounce: 2000,
 		}),
 		// new CopyWebpackPlugin([
 		// 	{ from: './manifest.json', to: './' },
 		// 	{ from: './favicon.ico', to: './' }
 		// ])
-	]).concat(ENV==='production' ? [
-		new webpack.optimize.UglifyJsPlugin({
-			output: {
-				comments: false
-			},
-			compress: {
-				unsafe_comps: true,
-				properties: true,
-				keep_fargs: false,
-				pure_getters: true,
-				collapse_vars: true,
-				unsafe: true,
-				warnings: false,
-				screw_ie8: true,
-				sequences: true,
-				dead_code: true,
-				drop_debugger: true,
-				comparisons: true,
-				conditionals: true,
-				evaluate: true,
-				booleans: true,
-				loops: true,
-				unused: true,
-				hoist_funs: true,
-				if_return: true,
-				join_vars: true,
-				cascade: true,
-				drop_console: true
-			}
-		}),
+	].concat(
+		ENV === 'production'
+			? [
+					new webpack.optimize.UglifyJsPlugin({
+						output: {
+							comments: false,
+						},
+						compress: {
+							unsafe_comps: true,
+							properties: true,
+							keep_fargs: false,
+							pure_getters: true,
+							collapse_vars: true,
+							unsafe: true,
+							warnings: false,
+							screw_ie8: true,
+							sequences: true,
+							dead_code: true,
+							drop_debugger: true,
+							comparisons: true,
+							conditionals: true,
+							evaluate: true,
+							booleans: true,
+							loops: true,
+							unused: true,
+							hoist_funs: true,
+							if_return: true,
+							join_vars: true,
+							cascade: true,
+							drop_console: true,
+						},
+					}),
 
-		// strip out babel-helper invariant checks
-		new ReplacePlugin([{
-			// this is actually the property name https://github.com/kimhou/replace-bundle-webpack-plugin/issues/1
-			partten: /throw\s+(new\s+)?[a-zA-Z]+Error\s*\(/g,
-			replacement: () => 'return;('
-		}]),
-	] : []),
+					// strip out babel-helper invariant checks
+					new ReplacePlugin([
+						{
+							// this is actually the property name https://github.com/kimhou/replace-bundle-webpack-plugin/issues/1
+							partten: /throw\s+(new\s+)?[a-zA-Z]+Error\s*\(/g,
+							replacement: () => 'return;(',
+						},
+					]),
+				]
+			: []
+	),
 
 	stats: { colors: true },
 
@@ -188,8 +202,8 @@ module.exports = {
 		Buffer: false,
 		__filename: false,
 		__dirname: false,
-		setImmediate: false
+		setImmediate: false,
 	},
 
-	devtool: ENV==='production' ? 'source-map' : 'cheap-module-eval-source-map',
+	devtool: ENV === 'production' ? 'source-map' : 'cheap-module-eval-source-map',
 };

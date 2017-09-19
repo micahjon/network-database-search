@@ -1,5 +1,4 @@
-// import 'promise-polyfill';
-// import 'isomorphic-fetch';
+import 'promise-polyfill';
 import { h, render } from 'preact';
 import '../node_modules/purecss/build/pure.css'; // Pure table styles & buttons CSS
 import './style'; // index.less
@@ -7,7 +6,7 @@ import './style'; // index.less
 let root;
 function init() {
 	let App = require('./components/app').default;
-	root = render(<App />, document.getElementById('wpbody-content'), root);
+	root = render(<App />, document.getElementById('nds-root'), root);
 }
 
 // in development, set up HMR:

@@ -1,5 +1,4 @@
 import { h, Component } from 'preact';
-import './app';
 import SearchOptions from './search-options';
 import Results from './results';
 
@@ -89,8 +88,6 @@ export default class App extends Component {
 
 					sites[i].queries = data;
 					this.setState({ results: sites });
-
-					console.log(sites);
 				});
 			});
 
@@ -106,7 +103,7 @@ export default class App extends Component {
 	componentDidMount() {
 		// Get list of sites user has access to
 		jQuery
-			.post('http://gc.edu' + ajaxurl, {
+			.post(ajaxurl, {
 				action: 'nds_get_rest_api_url',
 			})
 			.fail(() => {
@@ -181,10 +178,8 @@ export default class App extends Component {
 	}
 
 	render(props, state) {
-		// console.log('render App');
-
 		return (
-			<div id="app" class="wrap nds">
+			<div class="wrap nds">
 				<h1>Network Database Search</h1>
 				<form class="nds__search-form" onSubmit={this.search.bind(this)}>
 					<h2>Search</h2>
