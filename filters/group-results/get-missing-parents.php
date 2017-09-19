@@ -26,6 +26,8 @@ function nds_fetch_posts_for_postmeta($results)
 	// Get all parent post ids except those we've already queried
 	$missingPostIds = nds_get_missing_parent_ids($results['postmeta'], $results['posts'], 'post_id', 'id');
 
+	if ( empty($missingPostIds) ) return $results;
+
 	// Sanitize parent ids 
 	// Source: https://coderwall.com/p/zepnaw/sanitizing-queries-with-in-clauses-with-wpdb-on-wordpress
 	// $format = '%d, %d, %d, %d, %d, [...]'
@@ -58,6 +60,8 @@ function nds_fetch_gforms_for_entries($results)
 
 	// Get all parent form ids except those we've already queried
 	$missingFormIds = nds_get_missing_parent_ids($results['gravityformentries'], $results['gravityforms'], 'form_id', 'id');
+
+	if ( empty($missingFormIds) ) return $results;
 
 	// Sanitize parent ids 
 	// Source: https://coderwall.com/p/zepnaw/sanitizing-queries-with-in-clauses-with-wpdb-on-wordpress

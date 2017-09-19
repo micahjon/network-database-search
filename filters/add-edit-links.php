@@ -13,10 +13,9 @@ function nds_add_post_links($results)
 
 	return array_map(function($result) use ($wpdb)
 	{
-		// Get edit post link w/out calling get_edit_post_link(), which 
-		// depends on current_user_can()
-		if ( !empty($editLink = get_post_type_object($result->post_type)->_edit_link) ) {
-			$result->__link = admin_url( sprintf( $editLink . '&action=edit', $result->id ) );
+		// Get edit post link
+		if ( $link = nds_get_edit_post_link($result->id, $result->post_type) ) {
+			$result->__link = $link;
 		}
 		// Link to navigation menus for menu items
 		else if ( $result->post_type === 'nav_menu_item' ) {
@@ -69,4 +68,26 @@ function nds_add_gravityformentry_links($results)
 		return $result;
 
 	}, $results);
+}
+
+/**
+ * Get edit post link using standard WordPress function in production and use
+ * fallback in development (where current_user_can() doesn't work)
+ * @param  Integer $postId 	Post id
+ * @param  String $postType Post type
+ * @return String          	Link or empty string
+ */
+function nds_get_edit_post_link($postId, $postType)
+{
+	// Production
+	if ( !defined('NDS_PLUGIN_DEV_USER_ID') ) {
+		return get_edit_post_link($postId, '');
+	}
+	
+	// Development
+	if ( !empty($editLink = get_post_type_object($postType)->_edit_link) ) {
+		return admin_url( sprintf( $editLink . '&action=edit', $postId ) );
+	}
+	
+	return '';
 }

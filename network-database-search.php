@@ -1,16 +1,19 @@
 <?php
 /*
 	Plugin Name: Network Database Search
-	Description: ...
+	Description: Powerful multisite database search for WordPress admins. Search posts, menus, options, custom fields, and forms.
 	Version: 0.1
 	Author: Micah Miller-Eshleman
 	Author URI: http://micahjon.com
 */				
 
+/**
+ * WordPress database query functions
+ */
 require 'queries.php';
 
 /**
- * Register REST APIs
+ * REST APIs
  */
 // Get url of REST API (via admin-ajax, whose url is accessible in browser as window.ajaxurl)
 require 'api/get-rest-api-url.php';
@@ -24,7 +27,9 @@ require 'api/get-query-types.php';
 // Search sites
 require 'api/search-site.php';
 
-// Filters for common result manipulations
+/**
+ * Filters for common result manipulations
+ */
 require 'filters/add-edit-links.php';
 require 'filters/add-titles.php';
 require 'filters/clip-long-fields.php';
@@ -61,26 +66,40 @@ add_action('admin_menu', function()
  * Generate "Database Search" page HTML (client-side using Preact)
  */
 function nds_page_content()
-{ ?>
+{ 
+	$pluginVersion = get_plugin_data( __FILE__ )['Version'];
+	$pluginDir = plugin_dir_url( __FILE__ );
 
-	<link rel="stylesheet" type="text/css" href="<?php echo plugin_dir_url( __FILE__ ); ?>preact-ui/build/style.css">
-	<script type="text/javascript" src="<?php echo plugin_dir_url( __FILE__ ); ?>preact-ui/build/bundle.js"></script>
+	// Development: only use a large JS bundle
+	if (defined('NDS_PLUGIN_DEV_USER_ID')) {
+		$jsPath = $pluginDir .'preact-ui/build/bundle.js?v='. $pluginVersion;
+	}
+	// Production: use small JS bundle and external stylesheet
+	else {
+		$cssPath = $pluginDir .'preact-ui/dist/style.css?v='. $pluginVersion;
+		$jsPath = $pluginDir .'preact-ui/build/bundle.js?v='. $pluginVersion;
+	}
+?>
+	
+	<?php if ( isset($cssPath) ): ?>
+		<link rel="stylesheet" type="text/css" href="<?php echo $cssPath ?>">
+	<?php endif; ?>
+
+	<div id="nds-root"></div>
+
+	<script type="text/javascript" src="<?php echo $jsPath; ?>"></script>
 
 <?php 
 }
 
 /**
- * Register search query types
+ * For local development, allow http://localhost:3000 origin
  */
-
-// ...............................................
-
-/**
- * For local development only
- */
-add_filter('allowed_http_origins', 'add_allowed_origins');
-
-function add_allowed_origins($origins) {
+if ( defined('NDS_PLUGIN_DEV_USER_ID') ) {
+	add_filter('allowed_http_origins', 'nds_allow_dev_origin');
+}
+function nds_allow_dev_origin($origins) 
+{
     $origins[] = 'http://localhost:3000';
     return $origins;
 }

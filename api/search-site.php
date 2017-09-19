@@ -12,10 +12,9 @@
 function nds_restapi_route_search_site()
 {
 	global $ndsUserId;
-	$ndsUserId = get_current_user_id();
-
-	// Just for testing
-	// $ndsUserId  = 124;
+	
+	// Get current user id (production) or hard-coded one (development)
+	$ndsUserId = defined('NDS_PLUGIN_DEV_USER_ID') ? NDS_PLUGIN_DEV_USER_ID : get_current_user_id();
 
 	register_rest_route( 'nds/v1', '/search/', [
 		'methods' => 'GET',
