@@ -1,10 +1,12 @@
 <?php
 /*
 	Plugin Name: Network Database Search
-	Description: Powerful multisite database search for WordPress admins. Search posts, menus, options, custom fields, and forms.
+	Description: Powerful multisite database search for WordPress administrators. Search posts, menus, options, custom fields, and forms.
 	Version: 0.1
 	Author: Micah Miller-Eshleman
 	Author URI: http://micahjon.com
+	License: GPL2
+	License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */				
 
 /**
