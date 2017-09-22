@@ -21,7 +21,7 @@ function nds_restapi_route_get_sites()
 add_action('rest_api_init', 'nds_restapi_route_get_sites');
 
 
-function nds_restapi_get_sites( WP_REST_Request $request )
+function nds_restapi_get_sites()
 {
 	// Get current user id
 	global $ndsUserId;
@@ -29,18 +29,32 @@ function nds_restapi_get_sites( WP_REST_Request $request )
 
 	// If they're a super admin, return all sites
 	if ( is_super_admin($userId) ) {
-		$sites = array_map(function($site)
-		{
-			$id = $site->blog_id;
-
-			return [
-				'id' => (int) $id,
-				// Output single quotes, don't encode as "&#039;"
-				'name' => wp_specialchars_decode(get_blog_details($id)->blogname, ENT_QUOTES),
-				'rest_url' => get_rest_url($id, 'nds/v1/')
+		// If this is a simple WordPress installation, just return current site
+		if ( !is_multisite() ) {
+			$id = 1;
+			$sites = [
+				[
+					'id' => $id,
+					// Output single quotes, don't encode as "&#039;"
+					'name' => wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES),
+					'rest_url' => get_rest_url($id, 'nds/v1/')
+				]
 			];
+		}
+		else {
+			$sites = array_map(function($site)
+			{
+				$id = $site->blog_id;
 
-		}, get_sites());
+				return [
+					'id' => (int) $id,
+					// Output single quotes, don't encode as "&#039;"
+					'name' => wp_specialchars_decode(get_blog_details($id)->blogname, ENT_QUOTES),
+					'rest_url' => get_rest_url($id, 'nds/v1/')
+				];
+
+			}, get_sites());
+		}
 	}
 
 	// Otherwise, return sites they are admins on
