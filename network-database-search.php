@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name: Network Database Search
-	Description: Powerful multisite database search for WordPress administrators. Search posts, menus, options, custom fields, and forms.
+	Description: Powerful multisite database search for WordPress administrators. Search posts, custom fields, menus, media, options, and even Gravity Forms.
 	Version: 0.1
 	Author: Micah Miller-Eshleman
 	Author URI: http://micahjon.com
@@ -12,7 +12,8 @@
 /**
  * WordPress database query functions
  */
-require 'queries.php';
+require 'query-types/core.php';
+require 'query-types/gravity-forms.php';
 
 /**
  * REST APIs
@@ -32,11 +33,11 @@ require 'api/search-site.php';
 /**
  * Filters for common result manipulations
  */
-require 'filters/add-edit-links.php';
-require 'filters/add-titles.php';
-require 'filters/clip-long-fields.php';
-require 'filters/group-results/get-missing-parents.php';
-require 'filters/group-results/group-children-with-parents.php';
+require 'result-filters/add-edit-links.php';
+require 'result-filters/add-titles.php';
+require 'result-filters/clip-long-fields.php';
+require 'result-filters/group-results/get-missing-parents.php';
+require 'result-filters/group-results/group-children-with-parents.php';
 
 /**
  * Add "Database Search" menu item under Settings on both Site Dashboard and Network Dashboard menus
@@ -61,7 +62,7 @@ add_action('network_admin_menu', function()
 });
 add_action('admin_menu', function()
 {
-	call_user_func_array('add_submenu_page', nds_menu_item_params('options-general.php'));
+	call_user_func_array('add_submenu_page', nds_menu_item_params('tools.php'));
 });
 
 /**
