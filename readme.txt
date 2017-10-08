@@ -17,3 +17,6 @@ Fast, in-depth search of key WordPress objects in a multisite installation:
 - Gravity Form settings & entries
 
 For site administrators who want to track down specific strings in their database. 
+
+== Credits ==
+* Thanks to [Shane Hauser](http://shanehauser.com/) for sharing the [banner photo on UnSplash](https://unsplash.com/photos/18dsFU_VpZI?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText).
