@@ -2,6 +2,10 @@
 
 set -eu
 
+realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+
 for i in "$@"
 do
 case $i in
