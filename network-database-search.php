@@ -80,7 +80,7 @@ function nds_page_content()
 	// Production: use small JS bundle and external stylesheet
 	else {
 		$cssPath = $pluginDir .'preact-ui/dist/style.css?v='. $pluginVersion;
-		$jsPath = $pluginDir .'preact-ui/build/bundle.js?v='. $pluginVersion;
+		$jsPath = $pluginDir .'preact-ui/dist/bundle.js?v='. $pluginVersion;
 	}
 ?>
 	
