@@ -79,7 +79,14 @@ export default class App extends Component {
 			.filter(site => site.active)
 			.map(({ rest_url }) => {
 				return new Promise(function(resolve, reject) {
-					jQuery.getJSON(`${rest_url}search/`, { term, queryTypes }, resolve, reject);
+					jQuery.ajax({
+						url: `${rest_url}search/`,
+						dataType: 'json',
+						data: { term, queryTypes },
+						headers: { 'X-WP-Nonce': window.nds_rest_api_nonce },
+						success: resolve,
+						error: reject,
+					});
 				});
 			})
 			.map((request, i) => {
