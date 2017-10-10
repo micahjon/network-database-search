@@ -83,6 +83,9 @@ function nds_page_content()
 		$jsPath = $pluginDir .'preact-ui/dist/bundle.js?v='. $pluginVersion;
 	}
 ?>
+	<script type="text/javascript">
+		window.nds_rest_api_nonce = '<?php echo wp_create_nonce('wp_rest'); ?>';
+	</script>
 	
 	<?php if ( isset($cssPath) ): ?>
 		<link rel="stylesheet" type="text/css" href="<?php echo $cssPath ?>">
